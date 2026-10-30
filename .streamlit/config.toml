@@ -1,0 +1,21 @@
+[theme]
+base = "light"
+primaryColor = "#1F4E79"
+backgroundColor = "#F5F6F3"
+secondaryBackgroundColor = "#E8ECEF"
+textColor = "#16233A"
+borderColor = "#D3D9E0"
+baseRadius = "0.375rem"
+# Public Sans: an open typeface first made for government websites
+font = "Public Sans:https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;500;600;700;800&display=swap, sans-serif"
+headingFontWeights = [800, 700, 700, 600, 600, 600]
+chartCategoricalColors = ["#1F4E79", "#B7791F", "#2F6B4F", "#A4262C", "#8A94A6", "#5B6676"]
+
+[theme.sidebar]
+backgroundColor = "#16233A"
+secondaryBackgroundColor = "#22324D"
+textColor = "#E9EDF2"
+borderColor = "#33445F"
+
+[browser]
+gatherUsageStats = false
