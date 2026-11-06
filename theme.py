@@ -1,6 +1,6 @@
-"""Visual system for FinRisk Lab: colour tokens, a little CSS, and small HTML helpers.
+"""Visual system for FinRisk Lab: colour tokens, CSS and small HTML helpers.
 
-Fonts and base colours live in .streamlit/config.toml; this file only adds what
+Fonts, base colours and radius live in .streamlit/config.toml. This file adds what
 Streamlit's theme options can't express.
 """
 from __future__ import annotations
@@ -10,119 +10,87 @@ import html
 import streamlit as st
 
 COLORS = {
-    "ink": "#16233A",       # text, sidebar
-    "paper": "#F5F6F3",     # page background
-    "regulator": "#1F4E79", # primary actions
-    "muted": "#5B6676",     # secondary text
-    "rule": "#D3D9E0",      # borders and dividers
-    "clear": "#2F6B4F",     # low risk / positive
-    "flag": "#B7791F",      # needs review / mixed
-    "risk": "#A4262C",      # high risk / negative
-    "flag_tint": "#FBF3E4",
+    "ink": "#0E1B33",
+    "muted": "#5E6B82",
+    "line": "#E3E8F0",
+    "canvas": "#F5F7FB",
+    "surface": "#FFFFFF",
+    "primary": "#2A5BD7",
+    "primary_soft": "#E8EEFC",
+    "clear": "#0F9D6B",
+    "flag": "#D98E04",
+    "risk": "#E04848",
+    "flag_tint": "#FFF6E5",
 }
 
 SENTIMENT_COLORS = {
     "Positive": COLORS["clear"],
     "Negative": COLORS["risk"],
-    "Neutral": "#8A94A6",
+    "Neutral": "#8B95A8",
     "Mixed": COLORS["flag"],
-    "Unclassified": "#C9CFD7",
+    "Unclassified": "#C9D1DE",
 }
+BAND_COLORS = {"Low": COLORS["clear"], "Medium": COLORS["flag"], "High": COLORS["risk"], "Not scored": "#8B95A8"}
+BAND_KIND = {"Low": "clear", "Medium": "flag", "High": "risk"}
 
 _CSS = """
 <style>
-/* Page width and rhythm */
-[data-testid="stMainBlockContainer"] { max-width: 1180px; padding-top: 2.2rem; padding-bottom: 4rem; }
+[data-testid="stMainBlockContainer"] { max-width: 1240px; padding-top: 1.5rem; padding-bottom: 4rem; }
 [data-testid="stMarkdownContainer"] p, [data-testid="stMarkdownContainer"] li { line-height: 1.6; }
-[data-testid="stMarkdownContainer"] p { max-width: 72ch; }
+[data-testid="stMetricValue"] { font-variant-numeric: tabular-nums; font-weight: 800; letter-spacing: -0.02em; }
+[data-testid="stMetricLabel"] p { color: #5E6B82; font-weight: 600; }
 
-/* Tabs read as a section index, not pills */
-[data-testid="stTabs"] [role="tablist"] { gap: 1.75rem; border-bottom: 1px solid #D3D9E0; }
-[data-testid="stTabs"] [role="tab"] { padding: 0.6rem 0; font-weight: 600; }
-[data-testid="stTabs"] [role="tab"] p { font-size: 0.98rem; }
+/* Page header */
+.ph { margin: 0.5rem 0 1.5rem; }
+.ph h1 { font-size: clamp(1.8rem, 3.2vw, 2.4rem); font-weight: 800; letter-spacing: -0.03em;
+  margin: 0; padding: 0; color: #0E1B33; }
+.ph p { color: #5E6B82; font-size: 1.05rem; margin: 0.35rem 0 0; max-width: 68ch; }
 
-/* Metrics: tabular figures, quiet labels */
-[data-testid="stMetricValue"] { font-variant-numeric: tabular-nums; font-weight: 700; letter-spacing: -0.01em; }
-[data-testid="stMetricLabel"] p { color: #5B6676; font-size: 0.85rem; }
-[data-testid="stMetric"] { border-top: 3px solid #16233A; padding-top: 0.6rem; }
+/* Home hero */
+.hero { padding: 2.2rem 0 1.4rem; }
+.hero h1 { font-size: clamp(2.3rem, 5vw, 3.6rem); line-height: 1.02; letter-spacing: -0.035em;
+  font-weight: 800; margin: 0 0 1rem; padding: 0; color: #0E1B33; max-width: 16ch; }
+.hero p { font-size: 1.15rem; color: #46536B; max-width: 56ch; margin: 0; line-height: 1.55; }
+.hero .tag { display: inline-block; font-weight: 700; font-size: 0.85rem; color: #2A5BD7;
+  background: #E8EEFC; padding: 0.3rem 0.75rem; border-radius: 999px; margin-bottom: 1.1rem; }
 
-/* Sidebar brand */
-.brand { display: flex; align-items: center; gap: 0.75rem; margin: 0.25rem 0 1.25rem; }
-.brand-mark { display: inline-grid; place-items: center; width: 2.3rem; height: 2.3rem;
-  border: 2px solid #E9EDF2; border-radius: 0.375rem; font-weight: 800; letter-spacing: 0.02em; }
-.brand-name { font-weight: 800; font-size: 1.15rem; line-height: 1.1; }
-.brand-sub { font-size: 0.8rem; opacity: 0.75; line-height: 1.3; }
-.keyrow { display: flex; align-items: center; gap: 0.5rem; font-size: 0.82rem; margin: 0.2rem 0; }
-.keyrow code { flex: 1; background: transparent; padding: 0; color: inherit; }
-.dot { width: 0.55rem; height: 0.55rem; border-radius: 50%; flex: none; }
-.dot.ok { background: #4CA37A; } .dot.no { background: #D9A13B; }
-.fineprint { font-size: 0.75rem; opacity: 0.7; line-height: 1.45; margin-top: 2rem; }
+/* Chips */
+.chip { display: inline-flex; align-items: center; gap: 0.35rem; padding: 0.22rem 0.7rem; border-radius: 999px;
+  font-size: 0.84rem; font-weight: 700; white-space: nowrap; }
+.chip.clear { color: #0B7A53; background: #E3F5EE; }
+.chip.flag { color: #8F5D00; background: #FFF1D6; }
+.chip.risk { color: #B42323; background: #FDE8E8; }
+.chip.muted { color: #5E6B82; background: #EDF1F8; }
+.chip.primary { color: #2A5BD7; background: #E8EEFC; }
+.chips { display: flex; flex-wrap: wrap; gap: 0.45rem; margin: 0.25rem 0 0.75rem; }
 
-/* Overview hero */
-.hero { padding: 1.5rem 0 2rem; }
-.hero h1 { font-size: clamp(2rem, 4.2vw, 3.1rem); line-height: 1.05; letter-spacing: -0.025em;
-  font-weight: 800; color: #16233A; margin: 0 0 1rem; padding: 0; }
-.hero p { font-size: 1.12rem; color: #3A4658; max-width: 62ch; line-height: 1.6; margin: 0; }
+/* Step tracker for the investigation */
+.steps { display: grid; grid-template-columns: repeat(6, 1fr); gap: 0.4rem; margin: 0.25rem 0 0.5rem; }
+.step { height: 6px; border-radius: 999px; background: #E3E8F0; }
+.step.done { background: #0F9D6B; }
+.step.now { background: #2A5BD7; }
 
-/* Triage pipeline: one strip, four stages */
-.pipeline { display: grid; grid-template-columns: repeat(4, 1fr); border: 1px solid #16233A;
-  border-radius: 0.375rem; overflow: hidden; margin: 0 0 2.5rem; background: #FFFFFF; }
-.stage { padding: 1rem 1.1rem 1.15rem; border-right: 1px solid #D3D9E0; position: relative; }
-.stage:last-child { border-right: none; background: #16233A; color: #F5F6F3; }
-.stage .n { font-size: 0.8rem; font-weight: 700; color: #1F4E79; font-variant-numeric: tabular-nums; }
-.stage:last-child .n { color: #9DB9D6; }
-.stage h4 { margin: 0.15rem 0 0.35rem; padding: 0; font-size: 1.05rem; font-weight: 800; color: inherit; }
-.stage p { margin: 0; font-size: 0.88rem; line-height: 1.45; opacity: 0.85; }
-.stage:not(:last-child)::after { content: ""; position: absolute; right: -6px; top: 50%;
-  width: 10px; height: 10px; background: #FFFFFF; border-top: 1px solid #D3D9E0;
-  border-right: 1px solid #D3D9E0; transform: translateY(-50%) rotate(45deg); z-index: 1; }
-@media (max-width: 760px) {
-  .pipeline { grid-template-columns: 1fr 1fr; }
-  .stage:nth-child(2) { border-right: none; }
-  .stage:nth-child(-n+2) { border-bottom: 1px solid #D3D9E0; }
-  .stage::after { display: none; }
-}
+/* Small labelled numbers inside panels */
+.kv { display: grid; grid-template-columns: auto 1fr; gap: 0.35rem 1rem; font-size: 0.95rem; }
+.kv span:nth-child(odd) { color: #5E6B82; }
+.kv span:nth-child(even) { font-weight: 600; }
 
-.rule { border-top: 1px solid #D3D9E0; margin: 2rem 0 1.5rem; }
+/* Contribution bars on the verdict */
+.bar { margin: 0.55rem 0; }
+.bar .top { display: flex; justify-content: space-between; font-size: 0.92rem; font-weight: 600; }
+.bar .top span:last-child { font-variant-numeric: tabular-nums; color: #5E6B82; }
+.bar .track { height: 8px; background: #EDF1F8; border-radius: 999px; margin-top: 0.3rem; overflow: hidden; }
+.bar .fill { height: 100%; border-radius: 999px; }
 
-/* Tool headers */
-.intro { margin: 0.75rem 0 1.25rem; }
-.intro h2 { font-size: 1.7rem; font-weight: 800; letter-spacing: -0.015em; margin: 0; padding: 0; color: #16233A; }
-.intro p { color: #5B6676; margin: 0.3rem 0 0; font-size: 1rem; }
-.empty { color: #5B6676; border: 1px dashed #C3CBD5; border-radius: 0.375rem;
-  padding: 1.1rem 1.25rem; margin-top: 1.5rem; }
-
-/* Chips and verdicts */
-.chip { display: inline-block; padding: 0.2rem 0.6rem; border-radius: 999px; font-size: 0.85rem;
-  font-weight: 700; border: 1.5px solid currentColor; white-space: nowrap; }
-.chip.clear { color: #2F6B4F; background: #EAF3EE; }
-.chip.flag { color: #8A5A12; background: #FBF3E4; }
-.chip.risk { color: #A4262C; background: #F8E9EA; }
-.chip.muted { color: #5B6676; background: #EEF0F3; }
 .verdicts { display: flex; flex-wrap: wrap; align-items: center; gap: 0.6rem; margin: 0.4rem 0 1rem; }
-.verdict-note { color: #5B6676; font-size: 0.92rem; }
-
-/* Earnings report header */
+.verdict-note { color: #5E6B82; font-size: 0.92rem; }
 .report-head { display: flex; flex-wrap: wrap; align-items: baseline; gap: 0.75rem; margin-top: 1.5rem; }
 .report-head h3 { margin: 0; padding: 0; font-weight: 800; }
-.report-head .quarter { color: #5B6676; font-weight: 600; }
-blockquote.guidance { border-left: 3px solid #1F4E79; margin: 1rem 0 1.25rem; padding: 0.4rem 0 0.4rem 1rem;
-  color: #16233A; max-width: 72ch; }
-
-/* Risk band meter */
-.meter { margin: 0.25rem 0 1rem; }
-.meter .score { font-size: 2.6rem; font-weight: 800; line-height: 1; font-variant-numeric: tabular-nums;
-  letter-spacing: -0.02em; }
-.meter .score small { font-size: 1rem; font-weight: 600; color: #5B6676; letter-spacing: 0; }
-.meter .track { position: relative; display: flex; height: 0.7rem; margin: 0.9rem 0 0.35rem;
-  border-radius: 0.2rem; overflow: visible; }
-.meter .seg { height: 100%; opacity: 0.28; }
-.meter .seg.on { opacity: 1; }
-.meter .pin { position: absolute; top: -0.35rem; width: 3px; height: 1.4rem; background: #16233A;
-  border-radius: 2px; transform: translateX(-1.5px); transition: left 300ms ease; }
-.meter .labels { display: flex; font-size: 0.78rem; color: #5B6676; }
-.meter .labels span { text-align: left; white-space: nowrap; }
-@media (prefers-reduced-motion: reduce) { .meter .pin { transition: none; } }
+.report-head .quarter { color: #5E6B82; font-weight: 600; }
+blockquote.guidance { border-left: 3px solid #2A5BD7; margin: 1rem 0 1.25rem; padding: 0.4rem 0 0.4rem 1rem; max-width: 72ch; }
+.news-meta { color: #5E6B82; font-size: 0.82rem; }
+.fineprint { font-size: 0.78rem; color: #5E6B82; line-height: 1.45; }
+.empty { color: #5E6B82; border: 1.5px dashed #CBD3E1; border-radius: 0.75rem; padding: 1.1rem 1.25rem; }
 </style>
 """
 
@@ -135,33 +103,54 @@ def chip(text: str, kind: str = "muted") -> str:
     return f'<span class="chip {kind}">{html.escape(text)}</span>'
 
 
-def section_intro(title: str, purpose: str) -> None:
-    st.markdown(f'<div class="intro"><h2>{html.escape(title)}</h2><p>{html.escape(purpose)}</p></div>',
+def page_header(title: str, subtitle: str) -> None:
+    st.markdown(f'<div class="ph"><h1>{html.escape(title)}</h1><p>{html.escape(subtitle)}</p></div>',
                 unsafe_allow_html=True)
 
 
-def pipeline(stages: list[tuple[str, str]]) -> None:
-    """The triage sequence on the overview page. Numbered because it is a real order of steps."""
+def steps_bar(total: int, done: set[int], current: int) -> None:
     cells = "".join(
-        f'<div class="stage"><span class="n">{i}</span><h4>{html.escape(t)}</h4><p>{html.escape(d)}</p></div>'
-        for i, (t, d) in enumerate(stages, start=1)
+        f'<div class="step {"done" if i in done else "now" if i == current else ""}"></div>' for i in range(total)
     )
-    st.markdown(f'<div class="pipeline">{cells}</div>', unsafe_allow_html=True)
+    st.markdown(f'<div class="steps" style="grid-template-columns:repeat({total},1fr)">{cells}</div>',
+                unsafe_allow_html=True)
 
 
-def band_meter(score: int, max_score: int, bands: list[tuple[int, str]], current: str) -> str:
-    """Score readout plus a track split into the Low / Medium / High bands, with a pin at the score."""
-    colors = {"Low": COLORS["clear"], "Medium": COLORS["flag"], "High": COLORS["risk"]}
-    edges = [t for t, _ in bands] + [max_score + 1]
-    segs, labels = [], []
-    for (start, name), end in zip(bands, edges[1:]):
-        width = (end - start) / (max_score + 1) * 100
-        on = " on" if name == current else ""
-        segs.append(f'<div class="seg{on}" style="width:{width:.2f}%;background:{colors[name]}"></div>')
-        labels.append(f'<span style="width:{width:.2f}%">{name}</span>')
-    pin = (score + 0.5) / (max_score + 1) * 100
-    return (
-        f'<div class="meter"><div class="score">{score}<small> / {max_score} · {current}</small></div>'
-        f'<div class="track">{"".join(segs)}<div class="pin" style="left:{pin:.2f}%"></div></div>'
-        f'<div class="labels">{"".join(labels)}</div></div>'
+def contribution_bar(label: str, value: float, max_value: float, color: str, note: str = "") -> str:
+    width = 0 if not max_value else max(2, min(100, 100 * value / max_value))
+    return (f'<div class="bar"><div class="top"><span>{html.escape(label)}</span><span>{html.escape(note)}</span></div>'
+            f'<div class="track"><div class="fill" style="width:{width:.1f}%;background:{color}"></div></div></div>')
+
+
+def gauge(score: float | None, band: str, height: int = 230):
+    """Plotly ring gauge for a 0-100 risk score."""
+    import plotly.graph_objects as go
+
+    value = 0 if score is None else score
+    color = BAND_COLORS.get(band, COLORS["primary"])
+    fig = go.Figure(go.Indicator(
+        mode="gauge+number", value=value,
+        number=dict(suffix="%", font=dict(size=44, color=COLORS["ink"])),
+        gauge=dict(
+            axis=dict(range=[0, 100], tickvals=[0, 35, 60, 100], tickfont=dict(size=11, color=COLORS["muted"])),
+            bar=dict(color=color, thickness=0.32),
+            bgcolor="#EDF1F8", borderwidth=0,
+            steps=[dict(range=[0, 35], color="#EAF6F1"), dict(range=[35, 60], color="#FFF5E1"),
+                   dict(range=[60, 100], color="#FDECEC")],
+        ),
+    ))
+    fig.update_layout(height=height, margin=dict(l=20, r=20, t=10, b=0), paper_bgcolor="rgba(0,0,0,0)")
+    return fig
+
+
+def style_fig(fig, height: int = 380):
+    """House style for Plotly charts."""
+    fig.update_layout(
+        height=height, margin=dict(l=8, r=8, t=30, b=8),
+        paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(0,0,0,0)",
+        font=dict(color=COLORS["ink"]), hovermode="x unified",
+        legend=dict(orientation="h", y=1.08, x=0, title=None),
+        xaxis=dict(showgrid=False, linecolor=COLORS["line"]),
+        yaxis=dict(gridcolor="#EDF1F8", zeroline=False),
     )
+    return fig

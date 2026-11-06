@@ -2,15 +2,15 @@
 
 **LLM-assisted market and financial-crime risk triage, built with Python and Streamlit. Works with Gemini, OpenAI, DeepSeek or Claude.**
 
-FinRisk Lab puts one LLM layer under two workflows that sit next to each other in a
-financial institution:
+FinRisk Lab is a first-pass risk desk for market and financial-crime signals. Search a company and
+work through a guided case, watch the market, or map a network of counterparties.
 
-| Workflow | Tool | What it does |
-|---|---|---|
-| Advisory | Headline sentiment | Classifies news per ticker and aggregates a net sentiment score |
-| Advisory | Earnings summary | Turns a call transcript into structured fields (revenue, EPS, guidance, risks, tone) |
-| Compliance | Adverse-media screening | Flags snippets that point to fraud, corruption, sanctions or laundering, with category and confidence |
-| Compliance | Red-flag assessment | Transparent rule-based counterparty score, plus an LLM narrative that must explain any disagreement |
+| Page | What it does |
+|---|---|
+| **Investigate** | Five-step case on one company: profile, market risk, news sentiment, adverse media and red flags. Each step adds to one composite risk score (shown as a %), with links to Yahoo Finance, SEC EDGAR, OpenSanctions, OFAC and the news sources. Exports a Markdown report. |
+| **Markets** | Watchlist of any Yahoo Finance tickers: performance chart, volatility, drawdown, beta, correlation heatmap, and the latest headlines scored by AI. |
+| **Network** | Interactive counterparty graph (NetworkX + Plotly). Dot size is betweenness centrality (brokers), colour is risk. Click an entity, filter by link type or payment size, and trace the path between two entities. Upload your own edges as CSV. |
+| **AI toolkit** | Headline sentiment (with model comparison), earnings-call summary, adverse-media screening and the red-flag score. |
 
 <!-- Add a screenshot: docs/screenshot.png -->
 
@@ -43,7 +43,8 @@ cp .env.example .env          # then paste at least one API key into .env
 streamlit run app.py
 ```
 
-Each tab has a **Load example** button that fills in fictional demo data.
+Market data comes from Yahoo Finance through `yfinance`. If it is unreachable, the app switches to clearly
+labelled demo data. The demo network on the Network page is entirely fictional.
 
 ## Tests
 
@@ -58,8 +59,11 @@ the score bands.
 ## Project structure
 
 ```
-app.py        Streamlit UI
-theme.py      Colour tokens, CSS and small HTML helpers for the UI
+app.py        Entry point: page setup, AI settings sidebar, navigation
+views/        One file per page (home, markets, investigate, network, toolkit, about)
+core/         Logic without Streamlit: market data, case scoring, network analysis, report export
+ui.py         Shared Streamlit helpers: settings, cached data and AI calls, error display
+theme.py      Colour tokens, CSS and chart styling
 llm.py        Provider functions, prompts, validated workflows
 risk.py       Transparent rule-based red-flag scoring
 samples.py    Fictional demo inputs
