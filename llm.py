@@ -56,6 +56,11 @@ def key_status() -> dict[str, bool]:
     return {p: bool(os.getenv(k)) for p, k in KEY_NAMES.items()}
 
 
+def is_demo(provider: str) -> bool:
+    """Demo mode: the provider has no API key, so AI steps return simulated, clearly labelled answers."""
+    return provider in KEY_NAMES and not os.getenv(KEY_NAMES[provider])
+
+
 def _key(provider: str) -> str:
     key = os.getenv(KEY_NAMES[provider])
     if not key:
@@ -132,6 +137,10 @@ def _generate(prompt: str, system: str, model: str, temperature: float, json_mod
     """Single dispatch point. The only place that picks a provider function."""
     if provider not in PROVIDERS:
         raise LLMError(f"Unknown provider '{provider}'. Choose from {list(PROVIDERS)}.")
+    if is_demo(provider):  # no key: answer with transparent rules instead of failing (see demo_ai.py)
+        import demo_ai
+
+        return demo_ai.respond(prompt, system, json_mode)
     try:
         text = PROVIDERS[provider](prompt, system, model=model, temperature=temperature, json_mode=json_mode)
     except ModuleNotFoundError as e:

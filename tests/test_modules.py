@@ -75,3 +75,23 @@ def test_news_rss_parsing_and_query():
     q = news.build_query("Acme Corp", adverse=True, window="7d")
     assert q.startswith('"Acme Corp" (') and "laundering" in q and q.endswith("when:7d")
     assert '<mark class="hit">fined</mark>' in news.highlight("Acme fined")
+
+
+def test_demo_mode_answers_every_task_without_a_key(monkeypatch):
+    import llm
+    from risk import score_flags
+
+    for k in llm.KEY_NAMES.values():
+        monkeypatch.delenv(k, raising=False)
+    assert llm.is_demo("gemini")
+    rows = llm.classify_headlines(["Acme beats estimates", "Acme fined by regulator", "Acme holds meeting"],
+                                  ["A", "A", "A"])
+    assert [r["sentiment"] for r in rows] == ["Positive", "Negative", "Neutral"]
+    media = llm.screen_adverse_media(["Bank fined for anti-money laundering failures", "Shop opens in Cork"])
+    assert media[0]["flag"] and media[0]["category"] == "money_laundering" and not media[1]["flag"]
+    s = llm.summarise_earnings(samples.TRANSCRIPT)
+    assert s["company"] == "Clearbrook Bank" and "1.84" in s["revenue"] and "0.92" in s["eps"]
+    flags = ["Shell-company indicators", "Opaque or undisclosed beneficial ownership",
+             "Politically exposed person (PEP) involved"]
+    a = llm.assess_red_flags(flags, "", score_flags(flags))
+    assert a["risk_rating"] == "High" and a["narrative"]

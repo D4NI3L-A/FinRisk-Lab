@@ -13,6 +13,9 @@ work through a guided case, watch the market, or map a network of counterparties
 | **News lookup** | Live Google News search on any company or person. Adverse-media mode adds financial-crime keywords, highlights them in each headline, and can screen the results with AI. |
 | **AI toolkit** | Headline sentiment (with model comparison), earnings-call summary, adverse-media screening and the red-flag score. |
 
+**Demo mode:** with no API key (as on the hosted version), every AI step answers with transparent keyword rules
+(`demo_ai.py`) and is labelled "Demo AI result", so the whole app works without spending any API credit.
+
 Dark and light themes are both built in: switch in the ⋮ menu → Settings → Theme.
 
 <!-- Add a screenshot: docs/screenshot.png -->
@@ -69,6 +72,7 @@ assets/       Logo and icon (SVG)
 ui.py         Shared Streamlit helpers: settings, cached data and AI calls, error display
 theme.py      Colour tokens, CSS and chart styling
 llm.py        Provider functions, prompts, validated workflows
+demo_ai.py    Rule-based stand-in answers used when no API key is set
 risk.py       Transparent rule-based red-flag scoring
 samples.py    Fictional demo inputs
 tests/        Offline unit tests

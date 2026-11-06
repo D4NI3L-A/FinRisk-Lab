@@ -81,7 +81,18 @@ def run_llm(fn, *args):
     return None
 
 
+def demo_ai_note(provider: str) -> None:
+    """Label simulated answers so nobody mistakes them for model output."""
+    if llm.is_demo(provider):
+        st.caption(":material/science: **Demo AI result.** No API key is set, so this answer comes from simple "
+                   "keyword rules, not a language model.")
+
+
 def run_caption(res: dict) -> None:
+    if llm.is_demo(res["provider"]):
+        st.caption(":material/science: **Demo AI result.** No API key is set, so this answer comes from simple "
+                   "keyword rules, not a language model. Run the app locally with a key for real AI answers.")
+        return
     served = "served from cache" if res["secs"] < 0.05 else f"{res['secs']:.1f} s"
     st.caption(f"{LABEL[res['provider']]} · `{res['model']}` · temperature {res['temp']} · {served}")
 

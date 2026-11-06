@@ -40,7 +40,9 @@ with st.sidebar:
               help="0 gives near-identical answers each run; higher values vary more. "
                    "Low values suit classification and screening.")
     if not keys[provider]:
-        st.warning(f"No {llm.KEY_NAMES[provider]} found. Add it to `.env` to use {LABEL[provider]}.")
+        st.info(f"**Demo mode.** No {llm.KEY_NAMES[provider]} found, so AI steps use simple keyword rules "
+                f"and are labelled as demo results. Add the key to `.env` to use {LABEL[provider]}.",
+                icon=":material/science:")
 
     with st.expander("API keys and connection"):
         for p in llm.PROVIDERS:

@@ -182,6 +182,7 @@ elif step == 2:
             st.rerun()  # refresh the score and progress at the top
     rows = case.get("news_rows")
     if rows:
+        ui.demo_ai_note(provider)
         labels = [r["sentiment"] for r in rows]
         counts = pd.Series(labels).value_counts()
         d1, d2 = st.columns([2, 3], gap="large")
@@ -229,6 +230,7 @@ elif step == 3:
             st.rerun()  # refresh the score and progress at the top
     rows = case.get("media_rows")
     if rows:
+        ui.demo_ai_note(provider)
         flagged = [r for r in rows if r["flag"]]
         m1, m2, m3 = st.columns(3)
         m1.metric("Screened", len(rows), border=True)
@@ -283,6 +285,7 @@ elif step == 4:
         with st.container(border=True):
             st.markdown(f"**AI rating: {case.get('narrative_rating')}** · rule band: {rule['band']}")
             st.write(case["narrative"])
+            ui.demo_ai_note(provider)
     nav_buttons(4)
 
 # ── Step 6: Verdict ───────────────────────────────────────────────────────
