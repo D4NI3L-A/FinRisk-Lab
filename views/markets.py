@@ -39,8 +39,8 @@ shown = prices[watch].dropna(how="all")
 data = (shown / shown.bfill().iloc[0] - 1) if view == "Return %" else shown
 long = data.reset_index(names="Date").melt("Date", var_name="Ticker", value_name="Value").dropna()
 fig = px.line(long, x="Date", y="Value", color="Ticker",
-              color_discrete_sequence=["#2A5BD7", "#0F9D6B", "#D98E04", "#E04848", "#7C8AA5", "#8B5CF6",
-                                       "#0EA5E9", "#B45309"])
+              color_discrete_sequence=["#5B8DEF", "#2BB673", "#F0A830", "#FF5A5F", "#A78BFA", "#22D3EE",
+                                       "#F472B6", "#8A97AD"])
 fig.update_traces(line=dict(width=2.2), hovertemplate="%{y:+.1%}" if view == "Return %" else "%{y:,.2f}")
 if view == "Return %":
     fig.update_yaxes(tickformat="+.0%")
@@ -78,7 +78,7 @@ if len(watch) > 1:
     with st.expander("How closely do they move together?", icon=":material/grid_on:"):
         corr = prices[watch].pct_change().corr()
         heat = px.imshow(corr, text_auto=".2f", zmin=-1, zmax=1, aspect="auto",
-                         color_continuous_scale=[[0, "#E04848"], [0.5, "#F3F6FB"], [1, "#2A5BD7"]])
+                         color_continuous_scale=[[0, "#FF5A5F"], [0.5, "rgba(138,151,173,0.12)"], [1, "#5B8DEF"]])
         heat.update_layout(height=320, margin=dict(l=0, r=0, t=10, b=0), coloraxis_showscale=False)
         st.plotly_chart(heat, config={"displayModeBar": False}, key="mk_corr")
         st.caption("Correlation of daily returns. Close to 1 means they rise and fall together, "

@@ -35,6 +35,9 @@ with b:
         "- Anomaly detection on contract and payment data\n"
         "- A labelled evaluation set to measure precision before any flag is trusted"
     )
+    st.markdown("#### Light or dark")
+    st.write("FinRisk Lab has a dark intelligence-console theme and a light case-file theme. Switch in the "
+             "⋮ menu at the top right, under Settings → Theme.")
     st.markdown("#### Built with")
     st.markdown("Python · Streamlit · pandas · NumPy · NetworkX · Plotly · yfinance · "
                 "Gemini, OpenAI, DeepSeek and Claude APIs")

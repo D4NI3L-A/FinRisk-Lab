@@ -1,19 +1,39 @@
+# Two themes: viewers switch between them in the ⋮ menu → Settings → Theme.
+# Shared options live in [theme]; colours live in [theme.dark] and [theme.light].
+
 [theme]
-base = "light"
-primaryColor = "#2A5BD7"
-backgroundColor = "#FFFFFF"
-secondaryBackgroundColor = "#F3F6FB"
-textColor = "#0E1B33"
-borderColor = "#E3E8F0"
 showWidgetBorder = true
-baseRadius = "0.75rem"
+baseRadius = "0.6rem"
 buttonRadius = "full"
 font = "Manrope:https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap, sans-serif"
+codeFont = "IBM Plex Mono:https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&display=swap, monospace"
 headingFontWeights = [800, 800, 700, 700, 600, 600]
-chartCategoricalColors = ["#2A5BD7", "#0F9D6B", "#D98E04", "#E04848", "#7C8AA5", "#8B5CF6"]
+chartCategoricalColors = ["#5B8DEF", "#2BB673", "#F0A830", "#FF5A5F", "#A78BFA", "#8A97AD"]
 
-[theme.sidebar]
-backgroundColor = "#F7F9FC"
+# Intelligence console: navy with signal-red details
+[theme.dark]
+primaryColor = "#E5383B"
+backgroundColor = "#0D1422"
+secondaryBackgroundColor = "#131C2E"
+textColor = "#E7ECF3"
+borderColor = "#26324A"
+linkColor = "#FF7A7C"
+
+[theme.dark.sidebar]
+backgroundColor = "#0A101C"
+secondaryBackgroundColor = "#131C2E"
+
+# Case-file paper: white with the same red details
+[theme.light]
+primaryColor = "#D62F33"
+backgroundColor = "#FFFFFF"
+secondaryBackgroundColor = "#F1F4F9"
+textColor = "#0E1B33"
+borderColor = "#DCE2EC"
+linkColor = "#B42326"
+
+[theme.light.sidebar]
+backgroundColor = "#F6F8FB"
 secondaryBackgroundColor = "#FFFFFF"
 
 [browser]

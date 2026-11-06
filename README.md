@@ -10,7 +10,10 @@ work through a guided case, watch the market, or map a network of counterparties
 | **Investigate** | Five-step case on one company: profile, market risk, news sentiment, adverse media and red flags. Each step adds to one composite risk score (shown as a %), with links to Yahoo Finance, SEC EDGAR, OpenSanctions, OFAC and the news sources. Exports a Markdown report. |
 | **Markets** | Watchlist of any Yahoo Finance tickers: performance chart, volatility, drawdown, beta, correlation heatmap, and the latest headlines scored by AI. |
 | **Network** | Interactive counterparty graph (NetworkX + Plotly). Dot size is betweenness centrality (brokers), colour is risk. Click an entity, filter by link type or payment size, and trace the path between two entities. Upload your own edges as CSV. |
+| **News lookup** | Live Google News search on any company or person. Adverse-media mode adds financial-crime keywords, highlights them in each headline, and can screen the results with AI. |
 | **AI toolkit** | Headline sentiment (with model comparison), earnings-call summary, adverse-media screening and the red-flag score. |
+
+Dark and light themes are both built in: switch in the ⋮ menu → Settings → Theme.
 
 <!-- Add a screenshot: docs/screenshot.png -->
 
@@ -61,7 +64,8 @@ the score bands.
 ```
 app.py        Entry point: page setup, AI settings sidebar, navigation
 views/        One file per page (home, markets, investigate, network, toolkit, about)
-core/         Logic without Streamlit: market data, case scoring, network analysis, report export
+core/         Logic without Streamlit: market data, news search, case scoring, network analysis, report export
+assets/       Logo and icon (SVG)
 ui.py         Shared Streamlit helpers: settings, cached data and AI calls, error display
 theme.py      Colour tokens, CSS and chart styling
 llm.py        Provider functions, prompts, validated workflows

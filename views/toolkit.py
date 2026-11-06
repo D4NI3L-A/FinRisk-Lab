@@ -168,12 +168,12 @@ with tab_head:
                 color=alt.condition(alt.datum.net >= 0, alt.value(COLORS["clear"]), alt.value(COLORS["risk"])),
                 tooltip=["ticker", alt.Tooltip("net:Q", format="+.2f")],
             )
-            zero = alt.Chart(pd.DataFrame({"x": [0]})).mark_rule(color=COLORS["ink"]).encode(x="x:Q")
+            zero = alt.Chart(pd.DataFrame({"x": [0]})).mark_rule(color=COLORS["muted"]).encode(x="x:Q")
             st.altair_chart((bars + zero).properties(height=height), width="stretch")
 
         st.markdown("##### Every headline")
         st.dataframe(
-            df.style.map(lambda v: f"color: {SENTIMENT_COLORS.get(v, COLORS['ink'])}; font-weight: 600",
+            df.style.map(lambda v: f"color: {SENTIMENT_COLORS.get(v, COLORS['muted'])}; font-weight: 600",
                          subset=["sentiment"]),
             hide_index=True, width="stretch",
             column_config={
@@ -195,7 +195,7 @@ with tab_head:
                   help="Share of headlines where every selected model gave the same label.")
         k2.metric("Headlines", len(table))
         st.dataframe(
-            table.style.map(lambda v: f"color: {SENTIMENT_COLORS.get(v, COLORS['ink'])}; font-weight: 600",
+            table.style.map(lambda v: f"color: {SENTIMENT_COLORS.get(v, COLORS['muted'])}; font-weight: 600",
                             subset=cols),
             hide_index=True, width="stretch",
             column_config={"ticker": st.column_config.TextColumn("Ticker", width="small"),

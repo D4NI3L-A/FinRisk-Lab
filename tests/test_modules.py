@@ -57,3 +57,21 @@ def test_price_metrics_on_known_series():
     s = pd.Series([100, 110, 99, 120], index=pd.bdate_range("2026-01-01", periods=4))
     m = market.price_metrics(s)
     assert round(m["period"], 2) == 0.20 and round(m["max_dd"], 2) == -0.10
+
+
+def test_news_rss_parsing_and_query():
+    from core import news
+
+    xml = """<rss><channel>
+      <item><title>Acme fined over laundering failures - Daily Ledger</title><link>http://a</link>
+        <pubDate>Fri, 06 Nov 2026 09:00:00 GMT</pubDate><source url="http://dl">Daily Ledger</source></item>
+      <item><title>Acme opens new office</title><link>http://b</link></item>
+    </channel></rss>"""
+    items = news.parse_rss(xml)
+    assert items[0]["title"] == "Acme fined over laundering failures" and items[0]["publisher"] == "Daily Ledger"
+    assert items[0]["published"].startswith("2026-11-06")
+    assert news.keyword_hits(items[0]["title"]) == ["laundering", "fine"] or "laundering" in news.keyword_hits(items[0]["title"])
+    assert news.keyword_hits(items[1]["title"]) == []
+    q = news.build_query("Acme Corp", adverse=True, window="7d")
+    assert q.startswith('"Acme Corp" (') and "laundering" in q and q.endswith("when:7d")
+    assert '<mark class="hit">fined</mark>' in news.highlight("Acme fined")

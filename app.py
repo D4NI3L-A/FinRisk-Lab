@@ -4,6 +4,8 @@ Run with:  streamlit run app.py
 """
 from __future__ import annotations
 
+from pathlib import Path
+
 import pandas as pd
 import streamlit as st
 from dotenv import load_dotenv
@@ -11,10 +13,12 @@ from dotenv import load_dotenv
 load_dotenv()
 
 import llm  # noqa: E402  (after load_dotenv so model overrides in .env are picked up)
-from theme import inject_css  # noqa: E402
+from theme import inject_css, page_enter  # noqa: E402
 
-st.set_page_config(page_title="FinRisk Lab", page_icon=":material/shield:", layout="wide",
+ASSETS = Path(__file__).parent / "assets"
+st.set_page_config(page_title="FinRisk Lab", page_icon=str(ASSETS / "icon.png"), layout="wide",
                    initial_sidebar_state="collapsed")
+st.logo(str(ASSETS / "logo.svg"), icon_image=str(ASSETS / "icon.svg"), size="large")
 inject_css()
 
 LABEL = llm.PROVIDER_LABELS
@@ -67,6 +71,8 @@ with st.sidebar:
         st.toast("Cached results cleared")
 
     st.divider()
+    st.caption(":material/contrast: **Light or dark?** Open the ⋮ menu at the top right, then "
+               "Settings → Theme.")
     st.markdown('<p class="fineprint">Educational prototype for FIN42330, Python for Financial Data Science, '
                 "UCD. Not financial advice and not a compliance system. Model output can be wrong; "
                 "check primary sources.</p>", unsafe_allow_html=True)
@@ -77,7 +83,10 @@ pages = [
     st.Page("views/markets.py", title="Markets", icon=":material/monitoring:"),
     st.Page("views/investigate.py", title="Investigate", icon=":material/travel_explore:"),
     st.Page("views/network.py", title="Network", icon=":material/hub:"),
+    st.Page("views/news.py", title="News lookup", icon=":material/newspaper:"),
     st.Page("views/toolkit.py", title="AI toolkit", icon=":material/auto_awesome:"),
     st.Page("views/about.py", title="About", icon=":material/info:"),
 ]
-st.navigation(pages, position="top").run()
+page = st.navigation(pages, position="top")
+page_enter(page.title)  # fade in when the page changes
+page.run()

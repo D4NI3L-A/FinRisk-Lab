@@ -19,7 +19,7 @@ def _pick_ticker() -> None:
 left, right = st.columns([7, 5], gap="large", vertical_alignment="center")
 with left:
     st.markdown(
-        '<section class="hero"><span class="tag">Market and financial-crime risk, in one place</span>'
+        '<section class="hero"><span class="tag"><span class="live-dot"></span>Market and financial-crime risk, in one place</span>'
         "<h1>Investigate any company in minutes.</h1>"
         "<p>Search a ticker to get its market risk, what the news is saying, any adverse media and a "
         "transparent red-flag score, all combined into one case you can export.</p></section>",
@@ -64,11 +64,16 @@ modules = [
     ("views/network.py", ":material/hub:", "Map a network",
      "See who connects to whom. Brokers and risky counterparties stand out, and you can trace the path "
      "between any two entities."),
+    ("views/news.py", ":material/newspaper:", "Look up live news",
+     "Search today's news on any company or person, with an adverse-media mode that adds "
+     "financial-crime keywords."),
     ("views/toolkit.py", ":material/auto_awesome:", "Use the AI toolkit",
      "Classify headlines, summarise an earnings call, screen news for financial crime, or score red flags."),
+    ("views/about.py", ":material/info:", "Read how it works",
+     "How the case score is built, what comes next, and how the app covers the course lab."),
 ]
-for row in (modules[:2], modules[2:]):
-    for col, (page, icon, title, text) in zip(st.columns(2, gap="medium"), row):
+for row in (modules[:3], modules[3:]):
+    for col, (page, icon, title, text) in zip(st.columns(3, gap="medium"), row):
         with col.container(border=True, height="stretch"):
             st.markdown(f"##### {title}")
             st.write(text)

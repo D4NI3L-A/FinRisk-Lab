@@ -12,7 +12,7 @@ import ui
 from core import market, report, scoring
 from risk import MAX_SCORE, RED_FLAGS, score_flags
 from theme import (BAND_COLORS, BAND_KIND, COLORS, SENTIMENT_COLORS, chip, contribution_bar, gauge, page_header,
-                   steps_bar, style_fig)
+                   page_enter, steps_bar, style_fig)
 
 STEPS = ["Profile", "Market risk", "News sentiment", "Adverse media", "Red flags", "Verdict"]
 SCORED = {1: "market", 2: "news", 3: "media", 4: "flags"}
@@ -44,7 +44,8 @@ if ticker and (case is None or case["ticker"] != ticker):
 
 # ── Header: choose a company ──────────────────────────────────────────────
 page_header("Investigate", "Work through one company step by step. Each step adds evidence to the "
-                           "risk score, and every source is one click away.")
+                           "risk score, and every source is one click away.",
+            ref=f"Case file FR-{pd.Timestamp.today():%Y}-{ticker}" if ticker else "New case")
 with st.container(border=True):
     c1, c2, c3 = st.columns([3, 1.2, 4], vertical_alignment="bottom")
     st.session_state.setdefault("case_input", ticker or "")
@@ -93,6 +94,7 @@ h3.metric("Risk score", "n/a" if result["score"] is None else f"{result['score']
 h4.metric("Risk band", result["band"], border=True)
 
 steps_bar(len(STEPS), done_steps, step)
+page_enter(f"investigate {step}")  # each step fades in
 st.segmented_control(
     "Step", STEPS, key="case_step", label_visibility="collapsed", width="stretch",
     format_func=lambda s: ("✓ " if STEPS.index(s) in done_steps else f"{STEPS.index(s) + 1}. ") + s,
@@ -155,9 +157,9 @@ elif step == 1:
     norm = px_df / px_df.bfill().iloc[0] - 1
     fig = go.Figure()
     fig.add_trace(go.Scatter(x=norm.index, y=norm["^GSPC"], name="S&P 500",
-                             line=dict(color="#A7B1C2", width=1.6), hovertemplate="%{y:+.1%}"))
+                             line=dict(color="#6B7891", width=1.6, dash="dot"), hovertemplate="%{y:+.1%}"))
     fig.add_trace(go.Scatter(x=norm.index, y=norm[ticker], name=ticker, fill="tozeroy",
-                             line=dict(color=COLORS["primary"], width=2.4), fillcolor="rgba(42,91,215,0.08)",
+                             line=dict(color=COLORS["info"], width=2.4), fillcolor="rgba(91,141,239,0.10)",
                              hovertemplate="%{y:+.1%}"))
     fig.update_yaxes(tickformat="+.0%")
     st.plotly_chart(style_fig(fig, 380), config=CONFIG, key="inv_px")
@@ -185,7 +187,7 @@ elif step == 2:
         d1, d2 = st.columns([2, 3], gap="large")
         with d1:
             donut = go.Figure(go.Pie(labels=counts.index, values=counts.values, hole=0.62, sort=False,
-                                     marker=dict(colors=[SENTIMENT_COLORS.get(x, "#C9D1DE") for x in counts.index]),
+                                     marker=dict(colors=[SENTIMENT_COLORS.get(x, "#8A97AD") for x in counts.index]),
                                      textinfo="percent", hovertemplate="%{label}: %{value}<extra></extra>"))
             donut.update_layout(height=260, margin=dict(l=0, r=0, t=0, b=0), showlegend=True,
                                 legend=dict(orientation="h", y=-0.05), paper_bgcolor="rgba(0,0,0,0)",

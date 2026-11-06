@@ -19,7 +19,7 @@ FLAG_LABELS = {
     "adverse_media": "Adverse media",
     "shell": "Shell-company indicators",
 }
-RELATION_COLORS = {"owns": "#2A5BD7", "director": "#7C8AA5", "payment": "#D98E04", "contract": "#0F9D6B"}
+RELATION_COLORS = {"owns": "#5B8DEF", "director": "#6B7891", "payment": "#F0A830", "contract": "#2BB673"}
 TYPE_SYMBOLS = {"Company": "circle", "Shell company": "diamond", "Person": "circle-open-dot",
                 "Bank": "square", "Public body": "triangle-up", "Entity": "circle"}
 
@@ -117,7 +117,7 @@ def figure(g: nx.Graph, metrics: pd.DataFrame, pos: dict, selected: str | None =
         for u, v in zip(path, path[1:]):
             xs += [pos[u][0], pos[v][0], None]
             ys += [pos[u][1], pos[v][1], None]
-        fig.add_trace(go.Scatter(x=xs, y=ys, mode="lines", line=dict(width=4, color="#E04848"),
+        fig.add_trace(go.Scatter(x=xs, y=ys, mode="lines", line=dict(width=4, color="#E5383B"),
                                  hoverinfo="skip", name="Path"))
 
     m = metrics.set_index("entity")
@@ -128,15 +128,15 @@ def figure(g: nx.Graph, metrics: pd.DataFrame, pos: dict, selected: str | None =
         x=[pos[n][0] for n in nodes], y=[pos[n][1] for n in nodes],
         mode="markers+text",
         text=[n if n in top else "" for n in nodes],
-        textposition="top center", textfont=dict(size=11, color="#0E1B33"),
+        textposition="top center", textfont=dict(size=11),
         customdata=nodes,
         marker=dict(
             size=[14 + 34 * m.at[n, "betweenness"] / bmax for n in nodes],
             color=[m.at[n, "risk"] for n in nodes],
-            colorscale=[[0, "#0F9D6B"], [0.45, "#F2C14E"], [1, "#E04848"]], cmin=0, cmax=100,
+            colorscale=[[0, "#2BB673"], [0.45, "#F0A830"], [1, "#FF5A5F"]], cmin=0, cmax=100,
             symbol=[TYPE_SYMBOLS.get(g.nodes[n].get("type", "Entity"), "circle") for n in nodes],
             line=dict(width=[4 if n == selected else 1 for n in nodes],
-                      color=["#0E1B33" if n == selected else "#FFFFFF" for n in nodes]),
+                      color=["#E5383B" if n == selected else "rgba(138,151,173,0.55)" for n in nodes]),
             colorbar=dict(title=dict(text="Risk"), thickness=10, len=0.6, x=1.0),
         ),
         hovertemplate=[
